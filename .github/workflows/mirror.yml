@@ -8,12 +8,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Mirror repo
-        uses: Yikun/hub-mirror-action@master
+        uses: Yikun/hub-mirror-action@v1.4
         with:
-          src: github/nix-community/home-manager
-          dst: gitee/wei_hongjie/mirror-home-manager
+          src: nix-community/home-manager
+          src_endpoint: github.com
+          dst: wei_hongjie/mirror-home-manager
+          dst_endpoint: gitee.com
           dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
           dst_token: ${{ secrets.GITEE_TOKEN }}
           account_type: org
           static_list: true
           force_update: true
+          clone_style: https
