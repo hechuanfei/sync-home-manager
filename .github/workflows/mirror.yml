@@ -1,4 +1,4 @@
-name: Mirror home-manager to Gitee
+name: Git Mirror home-manager
 on:
   workflow_dispatch:
   schedule:
@@ -6,14 +6,20 @@ on:
 jobs:
   mirror:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - name: Mirror repo
-        uses: Yikun/hub-mirror-action@v0.12
-        with:
-          src: github/nix-community/home-manager
-          dst: gitee/wei_hongjie/mirror-home-manager
-          dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
-          dst_token: ${{ secrets.GITEE_TOKEN }}
-          account_type: org
-          static_list: true
-          force_update: true
+      - name: Setup SSH key for Gitee
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.GITEE_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan gitee.com >> ~/.ssh/known_hosts
+      - name: Mirror git repo
+        run: |
+          git config --global core.compression 9
+          git clone --mirror https://github.com/nix-community/home-manager.git
+          cd home-manager.git
+          git remote add gitee git@gitee.com:wei_hongjie/mirror-home-manager.git
+          git push --mirror gitee
