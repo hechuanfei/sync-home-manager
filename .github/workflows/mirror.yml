@@ -21,5 +21,7 @@ jobs:
           git config --global core.compression 9
           git clone --mirror https://github.com/nix-community/home-manager.git
           cd home-manager.git
+          # 删除所有 github PR refs，Gitee不支持
+          git for-each-ref --format='delete %(refname)' refs/pull | git update-ref --stdin
           git remote add gitee git@gitee.com:wei_hongjie/mirror-home-manager.git
           git push --mirror gitee
